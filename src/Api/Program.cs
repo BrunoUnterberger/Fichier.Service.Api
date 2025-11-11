@@ -1,10 +1,15 @@
+using Api.Db;
 using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+if (builder.Environment.IsDevelopment())
+    builder.Logging.AddConsole();
 builder.Services.AddFastEndpoints();
-
-var app = builder.Build();
+WebApplication app = builder.Build();
 app.UseFastEndpoints();
+using (ApplicationContext db = new(app.Configuration))
+{
+    db.Database.EnsureCreated();
+}
 app.Run();
